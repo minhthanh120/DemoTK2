@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: my_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: testdatabase
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - db_network
+networks:
+  db_network:
+    driver: bridge
+volumes:
+  postgres_data:
