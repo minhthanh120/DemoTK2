@@ -3,6 +3,11 @@ services:
     image: postgres:17
     container_name: my_postgres
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U root -d testdatabase"]
+      interval: 10s
+      retries: 5
+      timeout: 5s
     environment:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: root
@@ -10,10 +15,25 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
       - postgres_data:/var/lib/postgresql/data
     networks:
       - db_network
+  api:
+    build:
+      args:
+        DATABASE_HOST: postgres
+        NODE_ENV: development
+    container_name: nestjs_api
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    networks:
+      - db_network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_HOST: my_postgres
 networks:
   db_network:
     driver: bridge

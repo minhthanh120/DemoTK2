@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { User } from './user.entity';
-import { CreateUserDto } from './create-user.dto';
+import { User } from '../entity/user.entity';
+import { CreateUserDto } from '../dto/create-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
@@ -23,7 +23,6 @@ export class UserService {
    */
   async createUser(createUserDto: CreateUserDto): Promise<User> {
     const user: User = new User();
-    console.log(user.id);
     user.name = createUserDto.name;
     user.age = createUserDto.age;
     user.email = createUserDto.email;
@@ -73,7 +72,7 @@ export class UserService {
    * @param id is the type of number, which represent id of user
    * @returns nuber of rows deleted or affected
    */
-  removeUser(id: number): Promise<DeleteResult> {
+  removeUser(id: string): Promise<DeleteResult> {
     return this.userRepository.delete(id);
   }
 }

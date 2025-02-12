@@ -30,8 +30,14 @@
 
 ```bash
 $ yarn install
+$ yarn migration:run
 ```
 
+```bash
+if run on docker
+$ docker-compose.yml
+$ docker exec -it nestjs_api yarn migration:run
+```
 ## Compile and run the project
 
 ```bash
