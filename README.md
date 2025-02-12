@@ -34,7 +34,7 @@ $ yarn migration:run
 ```
 
 ```bash
-if run on docker
+# if run on docker
 $ docker-compose.yml
 $ docker exec -it nestjs_api yarn migration:run
 ```
