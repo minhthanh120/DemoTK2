@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ProductDTO } from 'src/dto/product.dto';
 import { Product } from 'src/entity/product.entity';
 import { mapper } from 'src/mappings/mapper';
-import { Repository } from 'typeorm';
+import { DeleteResult, Like, Repository } from 'typeorm';
 
 @Injectable()
 export class ProductService {
@@ -27,5 +27,21 @@ export class ProductService {
         product.stock = inputProduct.stock;
         product.id = id;
         return this.productRepository.save(product);
+    }
+
+    removeProduct(id: string): Promise<DeleteResult>{
+        return this.productRepository.delete(id);
+    }
+
+    findAllProduct():Promise<Product[]>{
+        return this.productRepository.find();
+    }
+
+    viewProduct(id:string):Promise<Product|null>{
+        return this.productRepository.findOneBy({id});
+    }
+
+    search(key:string):Promise<Product[]>{
+        return this.productRepository.find({where:[{name: Like(`%${key}%`)}]})
     }
 }
