@@ -1,12 +1,13 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, Request, UseGuards } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { ProductDTO } from 'src/dto/product.dto';
-
+import {Resource, Roles, Scopes, Public, RoleMatchingMode, AuthGuard} from 'nest-keycloak-connect';
 @Controller('product')
 export class ProductController {
     constructor(private readonly productService: ProductService) { }
 
-    @Post()
+    @Post('create')
+    @Public()
     create(@Body() inputProduct: ProductDTO) {
         return this.productService.createProduct(inputProduct);
     }
@@ -27,12 +28,13 @@ export class ProductController {
     }
 
     @Get('search/:key')
-    search(@Param('key') key:string){
-        return this.productService.search(key);
+    @UseGuards(AuthGuard)
+    search(@Request() req, @Param('key') key:string){
+        return this.productService.search(key, req.user);
     }
     @Get()
-    findAllProduct(){
-        return this.productService.findAllProduct();
+    getAllProduct(@Request() req){
+        return this.productService.findAllProduct(req.user);
     }
 
 }

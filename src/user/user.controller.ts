@@ -1,6 +1,7 @@
-import { Controller,Get,Post,Body,Patch, Param,Delete, UseInterceptors, ClassSerializerInterceptor } from '@nestjs/common';
+import { Controller,Get,Post,Body,Patch,Request, Param,Delete, UseInterceptors, ClassSerializerInterceptor, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from '../dto/create-user.dto';
+import { AuthGuard } from 'nest-keycloak-connect';
 @Controller('user')
 export class UserController {
     constructor(private readonly userService: UserService){}
@@ -51,5 +52,15 @@ export class UserController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.userService.removeUser(id);
+  }
+
+  @Get('profile/me')
+  @UseGuards(AuthGuard)
+  getProfile(@Request() req) {
+    return {
+      userId: req.user.sub,
+      username: req.user.username,
+      roles: req.user.resource_access.account.roles,
+    };
   }
 }

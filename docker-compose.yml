@@ -18,22 +18,51 @@ services:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - db_network
-  api:
-    build:
-      args:
-        DATABASE_HOST: postgres
-        NODE_ENV: development
-    container_name: nestjs_api
-    restart: unless-stopped
+      
+  # api:
+  #   build:
+  #     args:
+  #       DATABASE_HOST: postgres
+  #       NODE_ENV: development
+  #   container_name: nestjs_api
+  #   restart: unless-stopped
+  #   ports:
+  #     - "3000:3000"
+  #   networks:
+  #     - db_network
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #   environment:
+  #     DATABASE_HOST: my_postgres
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.1.2
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://my_postgres:5432/keycloak
+      KC_DB_USERNAME: root
+      KC_DB_PASSWORD: root
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: dev@1234
+      JAVA_OPTS: -Dkeycloak.profile=preview
+      KEYCLOAK_LOGLEVEL: DEBUG
+      ROOT_LOGLEVEL: DEBUG
+    command:
+      - start-dev
     ports:
-      - "3000:3000"
+      - 8080:8080
+      - 8443:8443
+    depends_on:
+      - postgres
     networks:
       - db_network
-    depends_on:
-      postgres:
-        condition: service_healthy
-    environment:
-      DATABASE_HOST: my_postgres
+  Redis:
+    image: redis
+    restart: always
+    ports:
+      - 6379:6379
+    networks:
+      - db_network
 networks:
   db_network:
     driver: bridge
