@@ -8,18 +8,16 @@ import { ProductModule } from './product/product.module';
 import databaseConfig from './config/database.config';
 import { AutomapperModule } from '@automapper/nestjs';
 import { classes } from '@automapper/classes';
-import { AuthGuard, KeycloakConnectModule, PolicyEnforcementMode, ResourceGuard, RoleGuard, TokenValidation } from 'nest-keycloak-connect';
+import { AuthGuard, KeycloakConnectModule, ResourceGuard, RoleGuard } from 'nest-keycloak-connect';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthModule } from './auth/auth.module';
 import { AuthController } from './auth/auth.controller';
 import { CacheModule } from '@nestjs/cache-manager';
-import Redis from 'ioredis';
-import { redisStore } from 'cache-manager-redis-yet';  
-import { createKeyv, Keyv } from '@keyv/redis';
+import { createKeyv } from '@keyv/redis';
 import { CacheableMemory } from 'cacheable';
 import { KeycloakConfigService } from './config/keycloak.config';
 import { KeycloakModule } from './config/keycloak.module';
-
+import { Keyv } from 'keyv';
 
 @Module({
   imports: [
@@ -45,7 +43,7 @@ import { KeycloakModule } from './config/keycloak.module';
     ProductModule,
     KeycloakConnectModule.registerAsync({
       useClass:KeycloakConfigService,
-      //imports:[KeycloakModule]
+      imports:[KeycloakModule]
     }),
     CacheModule.registerAsync({
       isGlobal:true,
@@ -62,7 +60,7 @@ import { KeycloakModule } from './config/keycloak.module';
     })
   ],
   exports: [KeycloakConnectModule],
-  controllers: [AppController, AuthController],
+  controllers: [AppController],
   providers: [AppService,
   {
     provide: APP_GUARD,

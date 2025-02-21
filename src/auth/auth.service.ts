@@ -38,12 +38,10 @@ export class AuthService {
       }
     }
 
-    async getMasterToken(force = false):Promise<any>{
-        if(force == false){
-          var mastertoken = await this.cacheManager.get('admin_token');
-          if(mastertoken!== null){
-            return mastertoken;
-          }
+    private async getMasterToken():Promise<any>{
+        var mastertoken = await this.cacheManager.get('admin_token');
+        if(typeof mastertoken === 'string' && await this.isTokenValid(mastertoken)){
+          return mastertoken;
         }
         const keycloakUrl = `${process.env.KEYCLOAK_AUTH_SERVER_URL}/realms/${process.env.KEYCLOAK_REALM}/protocol/openid-connect/token`;
         const clientId = `${process.env.KEYCLOAK_CLIENT_ID}`;
@@ -56,12 +54,10 @@ export class AuthService {
             data.append('grant_type', 'client_credentials');
             data.append('client_id', clientId);
             data.append('client_secret', clientSecret);
-            //data.append('username', 'company_admin');
-            //data.append('password', 'dev@1234');
             const response = await firstValueFrom(
                 this.httpService.post(keycloakUrl,data,{headers})
             );
-            const res = await this.cacheManager.set('admin_token', response.data.access_token);
+            const res = await this.cacheManager.set('admin_token', response.data.access_token, 600000);
             const token = await this.cacheManager.get('admin_token');
             
             return response.data.access_token;
@@ -72,14 +68,8 @@ export class AuthService {
         return null;
     }
 
-    async createUser(token, payload):Promise<any>{
-        if(!token || !await this.isTokenValid(token)){
-          token = await this.getMasterToken(true);
-          if(!token || !await this.isTokenValid(token)){
-            console.log('No valid token provided'); 
-            return false;
-          }
-        }
+    async createUser(payload):Promise<any>{
+        var token = await this.getMasterToken();
         try{
             const keycloakUrl = `${process.env.KEYCLOAK_AUTH_SERVER_URL}/admin/realms/${process.env.KEYCLOAK_REALM}/users`;
             const headers = {
@@ -107,8 +97,7 @@ export class AuthService {
     }
 
     async register(userPayload):Promise<any>{
-        const mastertoken = await this.getMasterToken()
-        const result = await this.createUser(mastertoken,userPayload);
+        const result = await this.createUser(userPayload);
         return result;
     }
 
@@ -131,7 +120,7 @@ export class AuthService {
         }
     }
 
-    async isTokenValid(token: string): Promise<boolean> {
+    private async isTokenValid(token: string): Promise<boolean> {
       const url = 'http://localhost:8080/realms/company/protocol/openid-connect/token/introspect';
       const headers= { 'Content-Type': 'application/x-www-form-urlencoded' }
       const data = {
