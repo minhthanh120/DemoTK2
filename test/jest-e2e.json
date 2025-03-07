@@ -1,0 +1,25 @@
+{
+  "moduleFileExtensions": [
+    "js",
+    "json",
+    "ts"
+  ],
+  "rootDir": ".",
+  "testEnvironment": "node",
+  "testRegex": ".e2e-spec.ts$",
+  "transform": {
+    "^.+\\.(t|j)s$": "ts-jest"
+  },
+  "moduleNameMapper": {
+    "@app/cache": "<rootDir>/../libs/cache/src",
+    "@app/cache/(.*)": "<rootDir>/../libs/cache/src/$1",
+    "@app/foundation.business": "<rootDir>/../libs/foundation.business/src",
+    "@app/foundation.business/(.*)": "<rootDir>/../libs/foundation.business/src/$1",
+    "@app/keycloak": "<rootDir>/../libs/keycloak/src",
+    "@app/keycloak/(.*)": "<rootDir>/../libs/keycloak/src/$1",
+    "@app/rediscache": "<rootDir>/../libs/rediscache/src",
+    "@app/rediscache/(.*)": "<rootDir>/../libs/rediscache/src/$1",
+    "@app/search": "<rootDir>/../libs/search/src",
+    "@app/search/(.*)": "<rootDir>/../libs/search/src/$1"
+  }
+}

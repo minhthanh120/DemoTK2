@@ -1,0 +1,167 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: my_postgres
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U root -d testdatabase"]
+      interval: 10s
+      retries: 5
+      timeout: 5s
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: testdatabase
+    ports:
+      - "5432:5432"
+    volumes:
+      - demotk2_postgres_data:/var/lib/postgresql/data
+    networks:
+      - db_network
+      
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.1.2
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://my_postgres:5432/keycloak
+      KC_DB_USERNAME: root
+      KC_DB_PASSWORD: root
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: dev@1234
+      KC_FEATURES: preview,token-exchange
+      JAVA_OPTS: -Dkeycloak.profile=preview
+      KEYCLOAK_LOGLEVEL: DEBUG
+      ROOT_LOGLEVEL: DEBUG
+
+    command:
+      - start-dev
+    ports:
+      - 8080:8080
+      - 8443:8443
+    depends_on:
+      - postgres
+    networks:
+      - db_network
+  Redis:
+    image: redis
+    restart: always
+    ports:
+      - 6379:6379
+    networks:
+      - db_network
+  es01:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.13.1
+    container_name: es01
+    environment:
+      - node.name=es01
+      - cluster.name=es-docker-cluster
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
+    ulimits:
+      memlock:
+          soft: -1
+          hard: -1
+    volumes:
+      - data01:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+      - 9300:9300
+    networks:
+      - db_network
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.13.1
+    container_name: kibana
+    environment:
+        - SERVER_NAME=kibana
+        - ELASTICSEARCH_HOSTS=http://es01:9200
+    ports:
+        - "5601:5601"
+    depends_on:
+        - es01
+    networks:
+        - db_network
+
+  kong-migrations:
+    image: kong/kong-gateway:3.9.0.1
+    container_name: kong-migrations
+    command: kong migrations up && kong migrations finish
+    environment:
+      - KONG_DATABASE=postgres
+      - KONG_PG_HOST=my_postgres
+      - KONG_PG_USER=root
+      - KONG_PG_PASSWORD=root
+      - KONG_PG_DATABASE=kongdb
+    networks:
+      - db_network
+    restart: on-failure
+
+  kong-gateway:
+    image: kong/kong-gateway:3.9.0.1
+    container_name: kong-gateway
+    environment:
+      - "KONG_DATABASE=postgres"
+      - "KONG_PG_HOST=my_postgres"
+      - "KONG_PG_USER=root"
+      - "KONG_PG_PASSWORD=root"
+      - "KONG_PG_DATABASE=kongdb"
+      - "KONG_PROXY_ACCESS_LOG=/dev/stdout"
+      - "KONG_ADMIN_ACCESS_LOG=/dev/stdout"
+      - "KONG_PROXY_ERROR_LOG=/dev/stderr"
+      - "KONG_ADMIN_ERROR_LOG=/dev/stderr"
+      - "KONG_ADMIN_LISTEN=0.0.0.0:8001"
+      - "KONG_ADMIN_GUI_URL=http://localhost:8002"
+      - KONG_LICENSE_DATA
+    ports:
+      - 8000:8000
+      - 9443:8443
+      - 8001:8001
+      - 8444:8444
+      - 8002:8002
+      - 8445:8445
+      - 8003:8003
+      - 8004:8004
+    networks:
+          - db_network
+  product-app:
+    container_name: product-app
+    build:
+      context: .
+      args:
+        - APP=product.api
+    # environment:
+    #   - DATABASE_HOST=my_postgres
+    #   - KEYCLOAK_AUTH_SERVER_URL=http://keycloak:8080
+    # volumes:
+    #   - .env.docker:/app/.env
+    restart: always
+    ports:
+      - 3001:3000
+    networks:
+      - db_network
+  auth-app:
+    container_name: auth-app
+    build:
+      context: .
+      args:
+        - APP=auth.api
+    # environment:
+    #   - DATABASE_HOST=my_postgres
+    #   - KEYCLOAK_AUTH_SERVER_URL=http://keycloak:8080
+    restart: always
+    ports:
+      - 3002:3000
+    networks:
+      - db_network
+    # volumes:
+    #   - .env.docker:/app/.env
+networks:
+  db_network:
+    driver: bridge
+volumes:
+  demotk2_postgres_data:
+    external: true
+  data01:
+      driver: local

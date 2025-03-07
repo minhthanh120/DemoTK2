@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json.schemastore.org/nest-cli",
+  "collection": "@nestjs/schematics",
+  "sourceRoot": "apps",
+  "monorepo": true,
+  "root": "apps",
+  "projects": {
+    "auth.api": {
+      "type": "application",
+      "root": "apps/auth.api",
+      "entryFile": "main",
+      "sourceRoot": "apps/auth.api/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/auth.api/tsconfig.app.json"
+      }
+    },
+    "cache": {
+      "type": "library",
+      "root": "libs/cache",
+      "entryFile": "index",
+      "sourceRoot": "libs/cache/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/cache/tsconfig.lib.json"
+      }
+    },
+    "foundation.business": {
+      "type": "library",
+      "root": "libs/foundation.business",
+      "entryFile": "index",
+      "sourceRoot": "libs/foundation.business/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/foundation.business/tsconfig.lib.json"
+      }
+    },
+    "keycloak": {
+      "type": "library",
+      "root": "libs/keycloak",
+      "entryFile": "index",
+      "sourceRoot": "libs/keycloak/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/keycloak/tsconfig.lib.json"
+      }
+    },
+    "product.api": {
+      "type": "application",
+      "root": "apps/product.api",
+      "entryFile": "main",
+      "sourceRoot": "apps/product.api/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/product.api/tsconfig.app.json"
+      }
+    },
+    "rediscache": {
+      "type": "library",
+      "root": "libs/rediscache",
+      "entryFile": "index",
+      "sourceRoot": "libs/rediscache/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/rediscache/tsconfig.lib.json"
+      }
+    },
+    "search": {
+      "type": "library",
+      "root": "libs/search",
+      "entryFile": "index",
+      "sourceRoot": "libs/search/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/search/tsconfig.lib.json"
+      }
+    }
+  },
+  "compilerOptions": {
+    "deleteOutDir": true,
+    "webpack": true
+  },
+  "generateOptions": {
+    "spec": false
+  }
+}

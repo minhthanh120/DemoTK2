@@ -1,0 +1,53 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "declaration": true,
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "target": "ES2021",
+    "sourceMap": true,
+    "outDir": "./dist",
+    "baseUrl": "./",
+    "incremental": true,
+    "skipLibCheck": true,
+    "strictNullChecks": true,
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitAny": false,
+    "strictBindCallApply": false,
+    "noFallthroughCasesInSwitch": false,
+    "paths": {
+      "@app/cache": [
+        "libs/cache/src"
+      ],
+      "@app/cache/*": [
+        "libs/cache/src/*"
+      ],
+      "@app/foundation.business": [
+        "libs/foundation.business/src"
+      ],
+      "@app/foundation.business/*": [
+        "libs/foundation.business/src/*"
+      ],
+      "@app/keycloak": [
+        "libs/keycloak/src"
+      ],
+      "@app/keycloak/*": [
+        "libs/keycloak/src/*"
+      ],
+      "@app/rediscache": [
+        "libs/rediscache/src"
+      ],
+      "@app/rediscache/*": [
+        "libs/rediscache/src/*"
+      ],
+      "@app/search": [
+        "libs/search/src"
+      ],
+      "@app/search/*": [
+        "libs/search/src/*"
+      ]
+    }
+  }
+}
