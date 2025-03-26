@@ -12,7 +12,7 @@ const config = {
     password: `${process.env.DATABASE_PASSWORD}`,
     database: `${process.env.DATABASE_NAME}`,
     entities: ["./libs/foundation.business/src/entity/*.entity{.ts,.js}"],
-    //migrations: ["dist/migrations/*{.ts,.js}"],
+    migrations: ["src/migrations/*{.ts,.js}"],
     autoLoadEntities: true,
     synchronize: false,
     logging:true,

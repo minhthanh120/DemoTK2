@@ -4,13 +4,11 @@ import { AuthGuard, Public, RoleGuard, Roles } from 'nest-keycloak-connect';
 import { Cache } from 'cache-manager';
 import { ProductDocument } from '@app/foundation.business/documents/product.document';
 import { ProductDTO } from '@app/foundation.business/dto/product.dto';
-import { ProductService } from './service/product.service';
-import { ProductSearchService } from './service/productsearch.service';
+import { ProductSearchService } from '../elasticsearch/productsearch.service';
 
 @Controller('product')
 export class ProductApiController {
-  constructor(private readonly productApiService: ProductApiService,
-    private readonly productService: ProductService,
+  constructor(private readonly productService: ProductApiService,
     private readonly productsearch:ProductSearchService) { }
 
   @Post('create')

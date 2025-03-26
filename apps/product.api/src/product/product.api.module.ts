@@ -10,8 +10,7 @@ import { KeycloakConnectModule } from 'nest-keycloak-connect';
 import { KeycloakModule, KeycloakService } from '@app/keycloak';
 import { FoundationBusinessModule } from '@app/foundation.business';
 import { RedisCacheModule } from '@app/rediscache';
-import { ProductSearchService } from './service/productsearch.service';
-import { ProductService } from './service/product.service';
+import { ProductSearchService } from '../elasticsearch/productsearch.service';
 import { ElasticsearchService } from '@nestjs/elasticsearch';
 
 @Module({
@@ -23,20 +22,17 @@ import { ElasticsearchService } from '@nestjs/elasticsearch';
 }),
   RedisCacheModule,
   FoundationBusinessModule,
-  //ProductSearchService,
   SearchModule
 ],
   controllers: [ProductApiController],
   exports:[
     TypeOrmModule,
     FoundationBusinessModule,
-    ProductService,
+    //ProductService,
     ProductSearchService
   ],
   providers: [
     ProductApiService, 
-    //SearchModule,
-    ProductService,
     ProductSearchService
   ],
 })

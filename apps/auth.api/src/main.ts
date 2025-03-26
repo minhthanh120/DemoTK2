@@ -1,5 +1,5 @@
 import { NestFactory } from '@nestjs/core';
-import { AuthApiModule } from './auth.api.module';
+import { AuthApiModule } from './auth/auth.api.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AuthApiModule);

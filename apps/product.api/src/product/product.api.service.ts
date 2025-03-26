@@ -9,7 +9,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, In, Like, Repository, SelectQueryBuilder } from 'typeorm';
 
 @Injectable()
-export class ProductService {
+export class ProductApiService {
     constructor(
         @InjectRepository(Product)
         private readonly productRepository: Repository<Product>,
@@ -18,7 +18,7 @@ export class ProductService {
         @InjectRepository(ProductCategory)
         private readonly productCategoryRepository: Repository<ProductCategory>
     ){}
-    private readonly logger = new Logger(ProductService.name);
+    private readonly logger = new Logger(ProductApiService.name);
 
     applyScope(query:SelectQueryBuilder<Product>,
         user:any

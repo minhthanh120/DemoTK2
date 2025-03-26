@@ -8,7 +8,6 @@ import { KeycloakModule, KeycloakService } from '@app/keycloak';
 import { RedisCacheModule } from '@app/rediscache';
 import { FoundationBusinessModule } from '@app/foundation.business';
 import { SearchModule } from '@app/search';
-import { AuthService } from './service/auth.service';
 import { HttpModule } from '@nestjs/axios';
 
 @Module({
@@ -22,7 +21,7 @@ import { HttpModule } from '@nestjs/axios';
     FoundationBusinessModule,
     SearchModule],
   controllers: [AuthApiController],
-  exports:[TypeOrmModule, FoundationBusinessModule, AuthService],
-  providers: [AuthApiService, AuthService],
+  exports:[TypeOrmModule, FoundationBusinessModule],
+  providers: [AuthApiService],
 })
 export class AuthApiModule {}

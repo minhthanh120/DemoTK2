@@ -2,11 +2,10 @@ import { Body, Controller, Get, HttpCode, HttpException, HttpStatus, Param, Post
 import { AuthApiService } from './auth.api.service';
 import { AuthGuard, Public } from 'nest-keycloak-connect';
 import { RegisterDto } from '@app/foundation.business/dto/register.dto';
-import { AuthService } from './service/auth.service';
 
 @Controller()
 export class AuthApiController {
-  constructor(private readonly authApiService: AuthApiService, private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthApiService) {}
 
   @Post('login')
   @Public()
@@ -84,6 +83,6 @@ export class AuthApiController {
   }
   @Get('hello')
   getHello(): string {
-    return this.authApiService.getHello();
+    return this.authService.getHello();
   }
 }
