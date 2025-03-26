@@ -1,6 +1,6 @@
 services:
   postgres:
-    image: postgres:17
+    image: postgis/postgis:17-3.5
     container_name: my_postgres
     restart: unless-stopped
     healthcheck:
@@ -21,6 +21,7 @@ services:
       
   keycloak:
     image: quay.io/keycloak/keycloak:26.1.2
+    container_name: keycloak
     environment:
       KC_DB: postgres
       KC_DB_URL: jdbc:postgresql://my_postgres:5432/keycloak
@@ -28,7 +29,7 @@ services:
       KC_DB_PASSWORD: root
       KC_BOOTSTRAP_ADMIN_USERNAME: admin
       KC_BOOTSTRAP_ADMIN_PASSWORD: dev@1234
-      KC_FEATURES: preview,token-exchange
+      KC_FEATURES: preview,token-exchange,scripts
       JAVA_OPTS: -Dkeycloak.profile=preview
       KEYCLOAK_LOGLEVEL: DEBUG
       ROOT_LOGLEVEL: DEBUG
@@ -42,13 +43,40 @@ services:
       - postgres
     networks:
       - db_network
-  Redis:
+    volumes:
+      - ./keycloak-extensions-protocol-1.0-SNAPSHOT.jar:/opt/keycloak/providers/keycloak-extensions-protocol-1.0-SNAPSHOT.jar
+  
+  keycloak2:
+    image: quay.io/keycloak/keycloak:24.0.0
+    container_name: keycloak
+    depends_on:
+      - postgres
+    restart: always
+    command: start-dev
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: dev@1234
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://my_postgres:5432/keycloakdb
+      KC_DB_USERNAME: root
+      KC_DB_PASSWORD: root
+      KC_FEATURES: preview,token-exchange,scripts
+    ports:
+      - 8080:8080
+      - 8443:8443
+    networks:
+      - db_network
+    volumes:
+      - ./client-role-attribute-mapper-0.2.0-SNAPSHOT.jar:/opt/keycloak/providers/keycloak-extensions-protocol-1.0-SNAPSHOT.jar
+  
+  redis:
     image: redis
     restart: always
     ports:
       - 6379:6379
     networks:
       - db_network
+  
   es01:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.13.1
     container_name: es01
@@ -164,4 +192,4 @@ volumes:
   demotk2_postgres_data:
     external: true
   data01:
-      driver: local
+    driver: local

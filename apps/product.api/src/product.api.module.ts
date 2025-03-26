@@ -17,10 +17,10 @@ import { ElasticsearchService } from '@nestjs/elasticsearch';
 @Module({
   imports: [
     TypeOrmModule.forFeature([Product, Category, ProductCategory]),
-      KeycloakConnectModule.registerAsync({
-          useExisting: KeycloakService,
-          imports: [KeycloakModule],
-  }),
+    KeycloakConnectModule.registerAsync({
+      useExisting: KeycloakService,
+      imports: [KeycloakModule],
+}),
   RedisCacheModule,
   FoundationBusinessModule,
   //ProductSearchService,

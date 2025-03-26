@@ -9,7 +9,7 @@ export class ProductSearchService {
   async indexProduct(product: ProductDocument) {
     return this.elasticsearchService.index<ProductDocument>({
       index: this.index,
-      id:product.id,
+      id: product.id,
       body: {
         id: product.id,
         name: product.name,
@@ -25,25 +25,25 @@ export class ProductSearchService {
 
   async getProductById(id: string): Promise<ProductDocument | null> {
     try {
-        const response = await this.elasticsearchService.get<ProductDocument>({
-            index: this.index,
-            id: id
-        });
-        return response?._source || null;
+      const response = await this.elasticsearchService.get<ProductDocument>({
+        index: this.index,
+        id: id
+      });
+      return response?._source || null;
     } catch (error) {
-        return null;
+      return null;
     }
-}
+  }
 
-  async removeProduct(id: string){
+  async removeProduct(id: string) {
     const exists = await this.elasticsearchService.exists({
-      index:this.index,
-      id:id
+      index: this.index,
+      id: id
     });
-    if(exists){
+    if (exists) {
       return await this.elasticsearchService.delete({
-        index:this.index,
-        id:id,
+        index: this.index,
+        id: id,
       });
     }
     console.warn(`Product with ID ${id} does not exist in Elasticsearch`);

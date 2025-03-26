@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get,Request, Inject, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { ProductApiService } from './product.api.service';
-import { AuthGuard, Public } from 'nest-keycloak-connect';
+import { AuthGuard, Public, RoleGuard, Roles } from 'nest-keycloak-connect';
 import { Cache } from 'cache-manager';
 import { ProductDocument } from '@app/foundation.business/documents/product.document';
 import { ProductDTO } from '@app/foundation.business/dto/product.dto';
@@ -54,7 +54,8 @@ export class ProductApiController {
   }
 
   @Post()
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles({roles:['clerk']})
   search(@Request() req, @Body('key') key:string){
     if(key){
       return this.productService.findAllProducts(req.user, key);
